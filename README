@@ -1,0 +1,24 @@
+lmytfy - let me ygor that for you
+=================================
+
+IRC bot that translates some irc chatter into specific ygor commands. This is
+written in C during the evening NJ Transit commuting bliss. You can't configure
+it, you clone and recompile. It is losely based on the source code of sic by
+suckless.org and as such keeps the same license.
+
+INSTALL
+
+    $ ./configure
+    $ make
+    $ sudo make install
+
+WHAT IS YGOR
+
+    Ref: https://github.com/truveris/ygor
+
+RELOADING
+
+    If you type "lmytfy: reload" it will exec() itself and keep the IRC socket
+    opened for the following process, after the first one is done cannibalizing
+    itself. That means you can recompile and reload without disconnecting...
+    Until you crash it for good.

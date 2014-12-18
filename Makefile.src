@@ -1,0 +1,20 @@
+all: src/${PROG}
+
+src/${PROG}:
+	cd src/ && make
+
+install: src/${PROG}
+	install -d -m 755 ${PREFIX}/bin
+	install -m 755 src/${PROG} ${PREFIX}/bin
+
+clean:
+	cd src/ && make clean
+	cd tests/ && make clean
+
+test:
+	cd tests/ && make test
+
+test-all:
+	cd tests/ && make test-all
+
+.PHONY: all clean install test test-all

@@ -1,0 +1,21 @@
+OBJECTS= \
+	main.o \
+	util.o
+
+OBJECTS+=${EXTRA_OBJECTS}
+
+all: options ${PROG}
+
+options:
+	@echo ${PROG} build options:
+	@echo "CFLAGS   = ${CFLAGS}"
+	@echo "LDFLAGS  = ${LDFLAGS}"
+	@echo "CC       = ${CC}"
+
+${PROG}: ${OBJECTS}
+	${CC} ${LDFLAGS} -o ${PROG} ${OBJECTS} ${CURSESLIB} 
+
+clean:
+	rm -f ${PROG} ${OBJECTS} test.o *core
+
+.PHONY: all clean

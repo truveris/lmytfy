@@ -1,0 +1,4 @@
+lmytfy
+*.o
+*.core
+Makefile
