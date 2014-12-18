@@ -94,12 +94,23 @@ handle_message(char *channel, char *s)
 {
 	char *out = NULL;
 
+	if (strcmp(s, "lmytfy: reload") == 0) {
+		pout("*", "reloading...");
+		char *fdenv;
+		if (asprintf(&fdenv, "SOCKETFD=%d", fileno(srv)) == -1) {
+			err(1, "failed to generate SOCKETFD pre-exec");
+		}
+		char const *env[] = { fdenv, NULL };
+		execle(progname, progname, (char *)NULL, env);
+		err(1, "failed to exec");
+	}
+
 	if (s[0] == '!') {
 		asprintf(&out, "ygor: !");
 		goto finish;
 	}
 
-	if (regexec(&ygor_preg, s, 0, 0, 0) == 0) {
+	if (regexec(&ygor_preg, s, 0, 0, 0) == 0 && strncmp(s, "ygor", 4) != 0) {
 		memcpy(s, "ygor", 4);
 		out = strdup(s);
 		goto finish;
@@ -110,17 +121,6 @@ handle_message(char *channel, char *s)
 		memcpy(s, "ygor", 4);
 		out = strdup(s);
 		goto finish;
-	}
-
-	if (strcmp(s, "lmytfy: reload") == 0) {
-		pout("*", "reloading...");
-		char *fdenv;
-		if (asprintf(&fdenv, "SOCKETFD=%d", fileno(srv)) == -1) {
-			err(1, "failed to generate SOCKETFD pre-exec");
-		}
-		char const *env[] = { fdenv, NULL };
-		execle(progname, progname, (char *)NULL, env);
-		err(1, "failed to exec");
 	}
 
 finish:
