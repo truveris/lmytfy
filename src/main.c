@@ -106,11 +106,16 @@ handle_message(char *channel, char *s)
 	}
 
 	if (s[0] == '!') {
-		asprintf(&out, "ygor: !");
+		out = strdup("ygor: !");
 		goto finish;
 	}
 
 	if (regexec(&ygor_preg, s, 0, 0, 0) == 0 && strncmp(s, "ygor", 4) != 0) {
+		if (strncmp(s, "orgy", 4) == 0) {
+			out = strdup("ಠ_ಠ");
+			goto finish;
+		}
+
 		memcpy(s, "ygor", 4);
 		out = strdup(s);
 		goto finish;
