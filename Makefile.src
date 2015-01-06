@@ -17,4 +17,4 @@ test:
 test-all:
 	cd tests/ && make test-all
 
-.PHONY: all clean install test test-all
+.PHONY: all src/${PROG} clean install test test-all

@@ -1,7 +1,7 @@
 /*
  * MIT/X Consortium License
  *
- * Copyright 2014, Truveris Inc. All Rights Reserved.
+ * Copyright 2014-2015, Truveris Inc. All Rights Reserved.
  * © 2005-2013 Anselm R Garbe <anselm@garbe.us>
  * © 2008-2009 Jeroen Schot <schot@a-eskwadraat.nl>
  * © 2007-2009 Kris Maglione <maglione.k@gmail.com>
@@ -32,12 +32,10 @@
 #include <string.h>
 #include <unistd.h>
 #include <netdb.h>
-#include <ctype.h>
 #include <fcntl.h>
 #include <err.h>
 
-#include "util.h"
-
+#include "lmytfy.h"
 
 int
 dial(char *host, char *port) {
@@ -54,7 +52,8 @@ dial(char *host, char *port) {
 	}
 
 	for (r = res; r; r = r->ai_next) {
-		if ((srv = socket(r->ai_family, r->ai_socktype, r->ai_protocol)) == -1)
+		if ((srv = socket(r->ai_family, r->ai_socktype,
+		    r->ai_protocol)) == -1)
 			continue;
 		if (connect(srv, r->ai_addr, r->ai_addrlen) == 0)
 			break;
@@ -64,7 +63,7 @@ dial(char *host, char *port) {
 	freeaddrinfo(res);
 
 	if (!r || srv == -1) {
-		err(1, "error: cannot connect to host '%s'\n", host);
+		err(1, "error: cannot connect to host '%s'", host);
 	}
 
 	/* Do not close this socket if we exec(). */
@@ -73,23 +72,4 @@ dial(char *host, char *port) {
 	}
 
 	return (srv);
-}
-
-char *
-skip(char *s, char c) {
-	while (*s != c && *s != '\0')
-		s++;
-	if (*s != '\0')
-		*s++ = '\0';
-	return (s);
-}
-
-void
-trim(char *s) {
-	char *e;
-
-	e = s + strlen(s) - 1;
-	while (isspace(*e) && e > s)
-		e--;
-	*(e + 1) = '\0';
 }

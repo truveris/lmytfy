@@ -1,7 +1,7 @@
 /*
  * MIT/X Consortium License
  *
- * Copyright 2014, Truveris Inc. All Rights Reserved.
+ * Copyright 2014-2015, Truveris Inc. All Rights Reserved.
  * © 2005-2013 Anselm R Garbe <anselm@garbe.us>
  * © 2008-2009 Jeroen Schot <schot@a-eskwadraat.nl>
  * © 2007-2009 Kris Maglione <maglione.k@gmail.com>
@@ -36,13 +36,11 @@
 #include <unistd.h>
 #include <regex.h>
 
-#include "util.h"
+#include "lmytfy.h"
+#include "parse.h"
+#include "msg.h"
+#include "dial.h"
 
-
-#define PROGRAM "lmytfy"
-
-
-regex_t ygor_preg, lmytfy_preg;
 static char *progname;
 static char *host = "localhost";
 static char *port = "6667";
@@ -51,10 +49,9 @@ static char *nick = "lmytfy";
 static char bufin[4096];
 char bufout[4096];
 static time_t trespond;
-static FILE *srv;
+FILE *srv;
 
-
-static void
+void
 pout(char *channel, char *fmt, ...) {
 	static char timestr[80];
 	time_t t;
@@ -68,7 +65,7 @@ pout(char *channel, char *fmt, ...) {
 	fprintf(stdout, "%-12s: %s %s\n", channel, timestr, bufout);
 }
 
-static void
+void
 sout(char *fmt, ...) {
 	va_list ap;
 
@@ -79,7 +76,7 @@ sout(char *fmt, ...) {
 	fflush(srv);
 }
 
-static void
+void
 privmsg(char *channel, char *msg) {
 	if (channel[0] == '\0') {
 		pout("", "No channel to send to");
@@ -87,52 +84,6 @@ privmsg(char *channel, char *msg) {
 	}
 	pout(channel, "<%s> %s", nick, msg);
 	sout("PRIVMSG %s :%s", channel, msg);
-}
-
-static void
-handle_message(char *channel, char *s)
-{
-	char *out = NULL;
-
-	if (strcmp(s, "lmytfy: reload") == 0) {
-		pout("*", "reloading...");
-		char *fdenv;
-		if (asprintf(&fdenv, "SOCKETFD=%d", fileno(srv)) == -1) {
-			err(1, "failed to generate SOCKETFD pre-exec");
-		}
-		char const *env[] = { fdenv, NULL };
-		execle(progname, progname, (char *)NULL, env);
-		err(1, "failed to exec");
-	}
-
-	if (s[0] == '!') {
-		out = strdup("ygor: !");
-		goto finish;
-	}
-
-	if (regexec(&ygor_preg, s, 0, 0, 0) == 0 && strncmp(s, "ygor", 4) != 0) {
-		if (strncmp(s, "orgy", 4) == 0) {
-			out = strdup("ಠ_ಠ");
-			goto finish;
-		}
-
-		memcpy(s, "ygor", 4);
-		out = strdup(s);
-		goto finish;
-	}
-
-	if (regexec(&lmytfy_preg, s, 0, 0, 0) == 0) {
-		s += 2;
-		memcpy(s, "ygor", 4);
-		out = strdup(s);
-		goto finish;
-	}
-
-finish:
-	if (out != NULL) {
-		privmsg(channel, out);
-		free(out);
-	}
 }
 
 static void
@@ -162,7 +113,7 @@ parsesrv(char *cmd) {
 
 	if (!strcmp("PRIVMSG", cmd)) {
 		pout(par, "<%s> %s", usr, txt);
-		handle_message(par, txt);
+		handle_message(usr, par, txt);
 	} else if (!strcmp("PING", cmd)) {
 		sout("PONG %s", txt);
 	} else {
@@ -182,14 +133,7 @@ main(int argc, char *argv[]) {
 
 	progname = strdup(argv[0]);
 
-	/* Compile the regexps in advance, saving half a cycle */
-	if (regcomp(&ygor_preg, "^[ygor]{4}[^a-z0-9]",
-	    REG_ICASE|REG_EXTENDED) != 0) {
-		errx(1, "error: ygor_preg is fscked up");
-	}
-	if (regcomp(&lmytfy_preg, "^lmytfy[^a-z0-9]", REG_ICASE) != 0) {
-		errx(1, "error: lmytfy_preg is fscked up");
-	}
+	init_regexes();
 
 	/*
 	 * Dial to the server. If a previous session is passing around a

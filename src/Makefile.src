@@ -1,6 +1,10 @@
 OBJECTS= \
+	dial.o \
+	jimmy.o \
 	main.o \
-	util.o
+	msg.o \
+	parse.o \
+	xmalloc.o
 
 OBJECTS+=${EXTRA_OBJECTS}
 
