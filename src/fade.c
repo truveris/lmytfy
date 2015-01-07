@@ -41,7 +41,7 @@ fadein(char *channel)
 	timeout.tv_sec = 0;
 	timeout.tv_nsec = NSECFADE;
 
-	for (i = 0; i < 21; i++) {
+	for (i = 10; i < 21; i++) {
 		snprintf(buf, 32, FORMAT, i * 5);
 		privmsg(channel, buf);
 		nanosleep(&timeout, NULL);
@@ -58,7 +58,7 @@ fadeout(char *channel)
 	timeout.tv_sec = 0;
 	timeout.tv_nsec = NSECFADE;
 
-	for (i = 20; i >= 0; i--) {
+	for (i = 20; i >= 10; i--) {
 		snprintf(buf, 32, FORMAT, i * 5);
 		privmsg(channel, buf);
 		nanosleep(&timeout, NULL);
