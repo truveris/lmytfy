@@ -36,10 +36,11 @@
 #include <unistd.h>
 #include <regex.h>
 
-#include "lmytfy.h"
-#include "parse.h"
-#include "msg.h"
 #include "dial.h"
+#include "lmytfy.h"
+#include "msg.h"
+#include "parse.h"
+#include "strlcpy.h"
 
 static char *progname;
 static char *host = "localhost";

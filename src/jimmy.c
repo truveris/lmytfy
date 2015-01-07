@@ -27,9 +27,10 @@
 #include <string.h>
 #include <time.h>
 
+#include "jimmy.h"
 #include "lmytfy.h"
 #include "parse.h"
-#include "jimmy.h"
+#include "strlcpy.h"
 #include "xmalloc.h"
 
 static char *last_alias = NULL;
@@ -79,13 +80,13 @@ handle_jimmy_fuckup(char *msg)
 
 	value = get_value_after_prefix(msg, "ok (replaces \"");
 	if (value != NULL) {
-		asprintf(&output, "ygor: alias %s \"%s\"", last_alias, value);
+		xasprintf(&output, "ygor: alias %s \"%s\"", last_alias, value);
 		goto done;
 	}
 
 	value = get_value_after_prefix(msg, "ok (created as \"");
 	if (value != NULL) {
-		asprintf(&output, "ygor: unalias %s", last_alias);
+		xasprintf(&output, "ygor: unalias %s", value);
 		goto done;
 	}
 

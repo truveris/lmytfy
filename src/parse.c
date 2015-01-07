@@ -29,6 +29,7 @@
 
 #include "lmytfy.h"
 #include "parse.h"
+#include "strlcpy.h"
 #include "xmalloc.h"
 
 regex_t ygor_preg, lmytfy_preg, alias_preg;
