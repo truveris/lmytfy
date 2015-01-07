@@ -73,10 +73,13 @@ handle_jimmy_fuckup(char *msg)
 
 	now = time(NULL);
 
-	/* Too old, don't matter. */
-	if (now - last_alias_time > 3) {
+	/* No previous alias. */
+	if (last_alias == NULL)
 		return NULL;
-	}
+
+	/* Too old, don't matter. */
+	if (now - last_alias_time > 3)
+		return NULL;
 
 	value = get_value_after_prefix(msg, "ok (replaces \"");
 	if (value != NULL) {
@@ -91,6 +94,11 @@ handle_jimmy_fuckup(char *msg)
 	}
 
 done:
+	if (last_alias != NULL) {
+		xfree(last_alias);
+		last_alias = NULL;
+	}
+
 	return output;
 }
 

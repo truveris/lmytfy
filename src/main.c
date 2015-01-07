@@ -41,6 +41,7 @@
 #include "msg.h"
 #include "parse.h"
 #include "strlcpy.h"
+#include "strtonum.h"
 
 static char *progname;
 static char *host = "localhost";
