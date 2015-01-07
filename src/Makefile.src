@@ -1,5 +1,6 @@
 OBJECTS= \
 	dial.o \
+	fade.o \
 	jimmy.o \
 	main.o \
 	msg.o \

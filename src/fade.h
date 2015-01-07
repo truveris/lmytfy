@@ -22,12 +22,5 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-int	 streq(char *, char *);
-int	 startswith(char *, char *);
-int	 addressed_to_ygor_or_typo(char *);
-int	 addressed_to_ygor_typo(char *);
-int	 addressed_to_lmytfy(char *);
-char	*get_alias_from_msg(char *);
-char	*skip(char *, char);
-void	 trim(char *);
-void	 init_regexes(void);
+void	 fadein(char *);
+void	 fadeout(char *);

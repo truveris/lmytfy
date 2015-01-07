@@ -15,10 +15,3 @@ INSTALL
 WHAT IS YGOR
 
     Ref: https://github.com/truveris/ygor
-
-RELOADING
-
-    If you type "lmytfy: reload" it will exec() itself and keep the IRC socket
-    opened for the following process, after the first one is done cannibalizing
-    itself. That means you can recompile and reload without disconnecting...
-    Until you crash it for good.

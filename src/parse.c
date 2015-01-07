@@ -38,8 +38,20 @@ int
 startswith(char *s, char *prefix)
 {
 	if (strncmp(s, prefix, strlen(prefix)) == 0)
-		return 1;
-	return 0;
+		return (1);
+	return (0);
+}
+
+/*
+ * Small wrapper around strcmp with a lighter footprint, it returns 1 if the
+ * strings are identical.
+ */
+int
+streq(char *a, char *b)
+{
+	if (strcmp(a, b) == 0)
+		return (1);
+	return (0);
 }
 
 /*
@@ -62,9 +74,9 @@ int
 addressed_to_ygor_or_typo(char *msg)
 {
 	if (regexec(&ygor_preg, msg, 0, 0, 0) == 0)
-		return 1;
+		return (1);
 
-	return 0;
+	return (0);
 }
 
 /*
@@ -75,12 +87,12 @@ int
 addressed_to_ygor_typo(char *msg)
 {
 	if (strncmp(msg, "ygor", 4) == 0)
-		return 0;
+		return (0);
 
 	if (regexec(&ygor_preg, msg, 0, 0, 0) != 0)
-		return 0;
+		return (0);
 
-	return 1;
+	return (1);
 }
 
 /*
@@ -98,10 +110,10 @@ get_alias_from_msg(char *msg)
 		len = m[1].rm_eo - m[1].rm_so;
 		alias = xmalloc(len + 1);
 		strlcpy(alias, msg + m[1].rm_so, len + 1);
-		return alias;
+		return (alias);
 	}
 
-	return NULL;
+	return (NULL);
 }
 
 char *

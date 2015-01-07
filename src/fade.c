@@ -22,88 +22,45 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <err.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
-#include <regex.h>
 #include <time.h>
 
 #include "fade.h"
 #include "lmytfy.h"
-#include "parse.h"
-#include "jimmy.h"
-#include "msg.h"
-#include "xmalloc.h"
 
-static char *
-handle_typoed_ygor_message(char *msg)
+#define NSECFADE 400000000;
+#define FORMAT "ygor: volume %u%%"
+
+void
+fadein(char *channel)
 {
-	if (strncmp(msg, "orgy", 4) == 0) {
-		return strdup("ಠ_ಠ");
+	int i;
+	struct timespec timeout;
+	char buf[32];
+
+	timeout.tv_sec = 0;
+	timeout.tv_nsec = NSECFADE;
+
+	for (i = 0; i < 21; i++) {
+		snprintf(buf, 32, FORMAT, i * 5);
+		privmsg(channel, buf);
+		nanosleep(&timeout, NULL);
 	}
-
-	memcpy(msg, "ygor", 4);
-	return strdup(msg);
-}
-
-/*
- * A lmytfy command may be called.
- */
-static char *
-handle_commands(char *channel, char *msg)
-{
-	char *s, *out = NULL;
-
-	s = strstr(msg, "fade");
-	if (s != NULL)
-		msg = s;
-
-	if (streq(msg, "fadein")) {
-		fadein(channel);
-	} else if (streq(msg, "fadeout")) {
-		fadeout(channel);
-	} else {
-		out = strdup("\001ACTION error: invalid command\001");
-	}
-
-	return out;
 }
 
 void
-handle_message(char *user, char *channel, char *msg)
+fadeout(char *channel)
 {
-	char *out = NULL;
+	int i;
+	struct timespec timeout;
+	char buf[32];
 
-	if (msg[0] == '!') {
-		out = strdup("ygor: !");
-		goto done;
-	}
+	timeout.tv_sec = 0;
+	timeout.tv_nsec = NSECFADE;
 
-	if (streq(user, "jimmy")) {
-		out = handle_jimmy_message(msg);
-		goto done;
-	}
-
-	if (addressed_to_ygor_typo(msg)) {
-		out = handle_typoed_ygor_message(msg);
-		goto done;
-	}
-
-	if (streq(user, "ygor")) {
-		out = handle_jimmy_fuckup(msg);
-		goto done;
-	}
-
-	if (addressed_to_lmytfy(msg)) {
-		out = handle_commands(channel, msg);
-		goto done;
-	}
-
-done:
-	if (out != NULL) {
-		privmsg(channel, out);
-		xfree(out);
+	for (i = 20; i >= 0; i--) {
+		snprintf(buf, 32, FORMAT, i * 5);
+		privmsg(channel, buf);
+		nanosleep(&timeout, NULL);
 	}
 }
