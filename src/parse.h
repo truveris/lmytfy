@@ -24,8 +24,8 @@
 
 int	 streq(char *, char *);
 int	 startswith(char *, char *);
-int	 addressed_to_ygor_or_typo(char *);
-int	 addressed_to_ygor_typo(char *);
+size_t	 addressed_to_ygor_or_typo(const char *);
+size_t	 addressed_to_ygor_typo(const char *);
 int	 addressed_to_lmytfy(char *);
 char	*get_alias_from_msg(char *);
 char	*skip(char *, char);

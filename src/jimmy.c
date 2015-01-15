@@ -110,8 +110,10 @@ char *
 handle_jimmy_message(char *msg)
 {
 	char *alias;
+	size_t offset;
 
-	if (addressed_to_ygor_or_typo(msg)) {
+	if ((offset = addressed_to_ygor_or_typo(msg)) > 0) {
+		msg += offset;
 		alias = get_alias_from_msg(msg);
 		if (alias == NULL)
 			return NULL;

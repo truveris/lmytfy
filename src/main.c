@@ -125,6 +125,7 @@ parsesrv(char *cmd) {
 	}
 }
 
+#ifndef REGRESS
 int
 main(int argc, char *argv[]) {
 	(void)argc;
@@ -195,3 +196,4 @@ main(int argc, char *argv[]) {
 
 	return (0);
 }
+#endif // ifndef REGRESS

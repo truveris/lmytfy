@@ -41,8 +41,8 @@ fadein(char *channel)
 	timeout.tv_sec = 0;
 	timeout.tv_nsec = NSECFADE;
 
-	for (i = 10; i < 21; i++) {
-		snprintf(buf, 32, FORMAT, i * 5);
+	for (i = 50; i <= 80; i += 5) {
+		snprintf(buf, 32, FORMAT, i);
 		privmsg(channel, buf);
 		nanosleep(&timeout, NULL);
 	}
@@ -58,9 +58,18 @@ fadeout(char *channel)
 	timeout.tv_sec = 0;
 	timeout.tv_nsec = NSECFADE;
 
-	for (i = 20; i >= 10; i--) {
-		snprintf(buf, 32, FORMAT, i * 5);
+	for (i = 80; i >= 50; i -= 5) {
+		snprintf(buf, 32, FORMAT, i);
 		privmsg(channel, buf);
 		nanosleep(&timeout, NULL);
 	}
+
+	timeout.tv_sec = 1;
+	timeout.tv_nsec = 0;
+
+	privmsg(channel, "ygor: stop");
+	nanosleep(&timeout, NULL);
+
+	privmsg(channel, "ygor: volume 80%");
+	nanosleep(&timeout, NULL);
 }

@@ -22,4 +22,5 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+char		*handle_typoed_ygor_message(char *, size_t);
 void		 handle_message(char *, char *, char *);

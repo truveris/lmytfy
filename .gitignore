@@ -2,3 +2,4 @@ lmytfy
 *.o
 *.core
 Makefile
+src/run_tests

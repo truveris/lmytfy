@@ -67,32 +67,37 @@ addressed_to_lmytfy(char *msg)
 }
 
 /*
- * Returns 1 if the message appears to be addressed to a typo'd version of
- * "ygor" including ygor itself.
+ * Check if the message starts with ygor or a typo-ed variant. Returns the
+ * number of bytes of the name or typo. For example "ygor:" returns 5.
  */
-int
-addressed_to_ygor_or_typo(char *msg)
+size_t
+addressed_to_ygor_or_typo(const char *msg)
 {
-	if (regexec(&ygor_preg, msg, 0, 0, 0) == 0)
-		return (1);
+	regmatch_t m[1];
+
+	if (regexec(&ygor_preg, msg, 1, m, 0) == 0) {
+		return (m[0].rm_eo);
+	}
 
 	return (0);
 }
 
 /*
- * Returns 1 if the message appears to be addressed to a typo'd version of
- * "ygor", but not "ygor" itself.
+ * Check if the message is addressed to a typo-ed variant of ygor, but not ygor
+ * directly. Returns the number of bytes of the typo-ed name or 0.
  */
-int
-addressed_to_ygor_typo(char *msg)
+size_t
+addressed_to_ygor_typo(const char *msg)
 {
+	regmatch_t m[1];
+
 	if (strncmp(msg, "ygor", 4) == 0)
 		return (0);
 
-	if (regexec(&ygor_preg, msg, 0, 0, 0) != 0)
+	if (regexec(&ygor_preg, msg, 1, m, 0) != 0)
 		return (0);
 
-	return (1);
+	return (m[0].rm_eo);
 }
 
 /*
@@ -145,7 +150,7 @@ trim(char *s) {
 void
 init_regexes(void)
 {
-	REG_COMP(ygor_preg,	"^[ygor]{3,4}[^a-z0-9]");
+	REG_COMP(ygor_preg,	"^[ygor]{3,4}[^a-zA-Z0-9]+");
 	REG_COMP(lmytfy_preg,	"^lmytfy[^a-z0-9]");
 	REG_COMP(alias_preg,	"alias ([^ ]+)");
 }

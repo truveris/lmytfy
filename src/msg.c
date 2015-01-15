@@ -37,15 +37,19 @@
 #include "msg.h"
 #include "xmalloc.h"
 
-static char *
-handle_typoed_ygor_message(char *msg)
+char *
+handle_typoed_ygor_message(char *msg, size_t offset)
 {
+	char *out;
+
 	if (strncmp(msg, "orgy", 4) == 0) {
 		return strdup("ಠ_ಠ");
 	}
 
-	memcpy(msg, "ygor", 4);
-	return strdup(msg);
+	msg += offset;
+	asprintf(&out, "ygor: %s", msg);
+
+	return out;
 }
 
 /*
@@ -75,6 +79,7 @@ void
 handle_message(char *user, char *channel, char *msg)
 {
 	char *out = NULL;
+	size_t offset;
 
 	if (msg[0] == '!') {
 		out = strdup("ygor: !");
@@ -86,8 +91,9 @@ handle_message(char *user, char *channel, char *msg)
 		goto done;
 	}
 
-	if (addressed_to_ygor_typo(msg)) {
-		out = handle_typoed_ygor_message(msg);
+	if ((offset = addressed_to_ygor_typo(msg)) > 0) {
+		fprintf(stderr, "offset = %lu\n", offset);
+		out = handle_typoed_ygor_message(msg, offset);
 		goto done;
 	}
 

@@ -20,6 +20,13 @@ options:
 ${PROG}: ${OBJECTS}
 	${CC} ${LDFLAGS} -o ${PROG} ${OBJECTS} ${CURSESLIB} 
 
+run_tests: ${OBJECTS}
+	$(CC) ${CFLAGS} -D REGRESS -c test.c -o main.o
+	$(CC) ${CFLAGS} ${LDFLAGS} -o run_tests ${OBJECTS}
+
+test: run_tests run_tests.sh
+	./run_tests.sh
+
 clean:
 	rm -f ${PROG} ${OBJECTS} test.o *core
 
