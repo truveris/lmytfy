@@ -1,8 +1,8 @@
 OBJECTS= \
 	dial.o \
 	fade.o \
-	jimmy.o \
 	main.o \
+	msg-alias.o \
 	msg.o \
 	parse.o \
 	xmalloc.o

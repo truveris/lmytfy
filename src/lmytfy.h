@@ -22,6 +22,12 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+/*
+ * We make the assumption that most things IRC are less than 2kB. Most buffers
+ * will be this size for convenience.
+ */
+#define MAXIRCLEN 2048
+
 void	 pout(char *, char *, ...);
 void	 sout(char *, ...);
 void	 privmsg(char *, char *);

@@ -32,7 +32,7 @@
 #include "strlcpy.h"
 #include "xmalloc.h"
 
-regex_t ygor_preg, lmytfy_preg, alias_preg;
+regex_t ygor_preg, lmytfy_preg, alias_preg, short_imgur;
 
 int
 startswith(char *s, char *prefix)
@@ -101,24 +101,43 @@ addressed_to_ygor_typo(const char *msg)
 }
 
 /*
- * Return the alias from an "ygor: " message.  The caller is responsible for
- * free'ing the memory.
+ * Extract the alias and value from an ygor: alias message.  Return 1 if we
+ * successfully extracted the values, 0 if not.
  */
-char *
-get_alias_from_msg(char *msg)
+int
+parse_alias(char *msg, char *alias, char *value)
 {
-	regmatch_t m[2];
+	regmatch_t m[3];
 	size_t len;
-	char *alias;
 
-	if (regexec(&alias_preg, msg, 2, m, 0) == 0) {
+	if (regexec(&alias_preg, msg, 3, m, 0) == 0) {
 		len = m[1].rm_eo - m[1].rm_so;
-		alias = xmalloc(len + 1);
+		if (len > (MAXIRCLEN - 1))
+			len = MAXIRCLEN - 1;
 		strlcpy(alias, msg + m[1].rm_so, len + 1);
-		return (alias);
+
+		len = m[2].rm_eo - m[2].rm_so;
+		if (len > (MAXIRCLEN - 1))
+			len = MAXIRCLEN - 1;
+		strlcpy(value, msg + m[2].rm_so, len + 1);
+
+		return (1);
 	}
 
-	return (NULL);
+	return (0);
+}
+
+/*
+ * Check if the given string looks like an attempt to display an imgur image
+ * without the trailing .gif.
+ */
+int
+is_short_imgur(char *s)
+{
+	if (regexec(&short_imgur, s, 0, 0, 0) == 0)
+		return (1);
+
+	return (0);
 }
 
 char *
@@ -152,5 +171,6 @@ init_regexes(void)
 {
 	REG_COMP(ygor_preg,	"^[ygor]{3,4}[^a-zA-Z0-9]+");
 	REG_COMP(lmytfy_preg,	"^lmytfy[^a-z0-9]");
-	REG_COMP(alias_preg,	"alias ([^ ]+)");
+	REG_COMP(alias_preg,	"alias ([^ ]+) +(.*)");
+	REG_COMP(short_imgur,	"^image https?://imgur.com/[a-zA-Z0-9]+$");
 }

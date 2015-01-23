@@ -33,7 +33,6 @@
 #include "fade.h"
 #include "lmytfy.h"
 #include "parse.h"
-#include "jimmy.h"
 #include "msg.h"
 #include "xmalloc.h"
 
@@ -79,6 +78,7 @@ void
 handle_message(char *user, char *channel, char *msg)
 {
 	char *out = NULL;
+	char alias[MAXIRCLEN], value[MAXIRCLEN];
 	size_t offset;
 
 	if (msg[0] == '!') {
@@ -86,19 +86,26 @@ handle_message(char *user, char *channel, char *msg)
 		goto done;
 	}
 
-	if (streq(user, "jimmy")) {
-		out = handle_jimmy_message(msg);
-		goto done;
-	}
+	if ((offset = addressed_to_ygor_or_typo(msg)) > 0) {
+		if (is_short_imgur(msg + offset)) {
+			sleep(1);
+			xasprintf(&out, "ygor: %s.gif", msg + offset);
+			goto done;
+		}
 
-	if ((offset = addressed_to_ygor_typo(msg)) > 0) {
-		fprintf(stderr, "offset = %lu\n", offset);
-		out = handle_typoed_ygor_message(msg, offset);
-		goto done;
+		if ((offset = addressed_to_ygor_typo(msg)) > 0) {
+			out = handle_typoed_ygor_message(msg, offset);
+			msg = out;
+		}
+
+		if (parse_alias(msg, alias, value)) {
+			out = handle_alias(user, alias, value);
+			goto done;
+		}
 	}
 
 	if (streq(user, "ygor")) {
-		out = handle_jimmy_fuckup(msg);
+		out = handle_ygor_msg(msg);
 		goto done;
 	}
 

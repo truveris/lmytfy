@@ -22,18 +22,23 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include <err.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <unistd.h>
+#include <regex.h>
 #include <time.h>
 
-#include "jimmy.h"
+#include "fade.h"
 #include "lmytfy.h"
 #include "parse.h"
-#include "strlcpy.h"
+#include "msg.h"
 #include "xmalloc.h"
 
-static char *last_alias = NULL;
+static char last_alias_value[MAXIRCLEN];
+static char last_alias_user[MAXIRCLEN];
+static char last_alias[MAXIRCLEN];
 static time_t last_alias_time;
 
 /*
@@ -62,66 +67,80 @@ get_value_after_prefix(char *s, char *prefix)
 	return value;
 }
 
+static char *
+fix_imgur_alias(char *alias, char *value)
+{
+	char *output;
+	xasprintf(&output, "ygor: alias %s %s.gif", alias, value);
+	return output;
+}
+
 /*
- * If jimmy aliases something, undo it.  This reacts to ygor's response.
+ * Handle messages from ygor.
  */
 char *
-handle_jimmy_fuckup(char *msg)
+handle_ygor_msg(char *msg)
 {
 	char *value, *output = NULL;
 	time_t now;
 
 	now = time(NULL);
 
-	/* No previous alias. */
-	if (last_alias == NULL)
-		return NULL;
-
 	/* Too old, don't matter. */
 	if (now - last_alias_time > 3)
 		return NULL;
 
+	if (streq(msg, "ok")) {
+		if (is_short_imgur(last_alias_value)) {
+			output = fix_imgur_alias(last_alias, last_alias_value);
+			goto done;
+		}
+	}
+
 	value = get_value_after_prefix(msg, "ok (replaces \"");
 	if (value != NULL) {
-		xasprintf(&output, "ygor: alias %s \"%s\"", last_alias, value);
-		goto done;
+		if (streq(last_alias_user, "jimmy")) {
+			xasprintf(&output, "ygor: alias %s \"%s\"", last_alias,
+			    value);
+			goto done;
+		}
+		if (is_short_imgur(last_alias_value)) {
+			output = fix_imgur_alias(last_alias, last_alias_value);
+			goto done;
+		}
 	}
 
 	value = get_value_after_prefix(msg, "ok (created as \"");
 	if (value != NULL) {
-		xasprintf(&output, "ygor: unalias %s", value);
-		goto done;
+		if (streq(last_alias_user, "jimmy")) {
+			xasprintf(&output, "ygor: unalias %s", value);
+			goto done;
+		}
+		if (is_short_imgur(last_alias_value)) {
+			output = fix_imgur_alias(value, last_alias_value);
+			goto done;
+		}
 	}
 
 done:
-	if (last_alias != NULL) {
-		xfree(last_alias);
-		last_alias = NULL;
-	}
+	last_alias_time = 0;
 
 	return output;
 }
 
 /*
- * Record the last time jimmy tried to alias something, we'll use that to undo
- * it when ygor reacts.
+ * Handle mistakes of normal ygor users.
  */
 char *
-handle_jimmy_message(char *msg)
+handle_alias(char *user, char *alias, char *value)
 {
-	char *alias;
-	size_t offset;
+	char *out = NULL;
 
-	if ((offset = addressed_to_ygor_or_typo(msg)) > 0) {
-		msg += offset;
-		alias = get_alias_from_msg(msg);
-		if (alias == NULL)
-			return NULL;
-		if (last_alias != NULL)
-			xfree(last_alias);
-		last_alias = alias;
-		last_alias_time = time(NULL);
-	}
+	/* Keep track of all aliases in case we need to correct. */
+	strlcpy(last_alias, alias, MAXIRCLEN);
+	strlcpy(last_alias_user, user, MAXIRCLEN);
+	strlcpy(last_alias_value, value, MAXIRCLEN);
+	last_alias_time = time(NULL);
 
-	return NULL;
+	return out;
 }

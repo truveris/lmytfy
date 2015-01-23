@@ -24,3 +24,5 @@
 
 char		*handle_typoed_ygor_message(char *, size_t);
 void		 handle_message(char *, char *, char *);
+char		*handle_alias(char *, char *, char *);
+char		*handle_ygor_msg(char *);
