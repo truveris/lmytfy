@@ -28,6 +28,7 @@ size_t	 addressed_to_ygor_or_typo(const char *);
 size_t	 addressed_to_ygor_typo(const char *);
 int	 addressed_to_lmytfy(char *);
 int	 is_short_imgur(char *);
+int	 is_gifv_imgur(char *);
 int	 parse_alias(char *, char *, char *);
 char	*skip(char *, char);
 void	 trim(char *);

@@ -68,10 +68,19 @@ get_value_after_prefix(char *s, char *prefix)
 }
 
 static char *
-fix_imgur_alias(char *alias, char *value)
+fix_short_imgur_alias(char *alias, char *value)
 {
 	char *output;
 	xasprintf(&output, "ygor: alias %s %s.gif", alias, value);
+	return output;
+}
+
+static char *
+fix_gifv_imgur_alias(char *alias, char *value)
+{
+	char *output;
+	*(value + strlen(value) - 1) = '\0';
+	xasprintf(&output, "ygor: alias %s %s", alias, value);
 	return output;
 }
 
@@ -92,7 +101,13 @@ handle_ygor_msg(char *msg)
 
 	if (streq(msg, "ok")) {
 		if (is_short_imgur(last_alias_value)) {
-			output = fix_imgur_alias(last_alias, last_alias_value);
+			output = fix_short_imgur_alias(last_alias,
+					last_alias_value);
+			goto done;
+		}
+		if (is_gifv_imgur(last_alias_value)) {
+			output = fix_gifv_imgur_alias(last_alias,
+					last_alias_value);
 			goto done;
 		}
 	}
@@ -105,7 +120,13 @@ handle_ygor_msg(char *msg)
 			goto done;
 		}
 		if (is_short_imgur(last_alias_value)) {
-			output = fix_imgur_alias(last_alias, last_alias_value);
+			output = fix_short_imgur_alias(last_alias,
+					last_alias_value);
+			goto done;
+		}
+		if (is_gifv_imgur(last_alias_value)) {
+			output = fix_gifv_imgur_alias(last_alias,
+					last_alias_value);
 			goto done;
 		}
 	}
@@ -117,7 +138,12 @@ handle_ygor_msg(char *msg)
 			goto done;
 		}
 		if (is_short_imgur(last_alias_value)) {
-			output = fix_imgur_alias(value, last_alias_value);
+			output = fix_short_imgur_alias(value,
+					last_alias_value);
+			goto done;
+		}
+		if (is_gifv_imgur(last_alias_value)) {
+			output = fix_gifv_imgur_alias(value, last_alias_value);
 			goto done;
 		}
 	}

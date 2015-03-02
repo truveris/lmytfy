@@ -32,7 +32,7 @@
 #include "strlcpy.h"
 #include "xmalloc.h"
 
-regex_t ygor_preg, lmytfy_preg, alias_preg, short_imgur;
+regex_t ygor_preg, lmytfy_preg, alias_preg, short_imgur, gifv_imgur;
 
 int
 startswith(char *s, char *prefix)
@@ -140,6 +140,19 @@ is_short_imgur(char *s)
 	return (0);
 }
 
+/*
+ * Check if the given string looks like an attempt to display an imgur image
+ * with a gifv extention (HTML5 + MPEG-4).
+ */
+int
+is_gifv_imgur(char *s)
+{
+	if (regexec(&gifv_imgur, s, 0, 0, 0) == 0)
+		return (1);
+
+	return (0);
+}
+
 char *
 skip(char *s, char c) {
 	while (*s != c && *s != '\0')
@@ -169,8 +182,9 @@ trim(char *s) {
 void
 init_regexes(void)
 {
-	REG_COMP(ygor_preg,	"^[ygor]{3,4}[^a-zA-Z0-9]+");
-	REG_COMP(lmytfy_preg,	"^lmytfy[^a-z0-9]");
-	REG_COMP(alias_preg,	"alias ([^ ]+) +(.*)");
-	REG_COMP(short_imgur,	"^image https?://imgur.com/[a-zA-Z0-9]+$");
+	REG_COMP(ygor_preg, "^[ygor]{3,4}[^a-zA-Z0-9]+");
+	REG_COMP(lmytfy_preg, "^lmytfy[^a-z0-9]");
+	REG_COMP(alias_preg, "alias ([^ ]+) +(.*)");
+	REG_COMP(short_imgur, "^image https?://imgur.com/[a-zA-Z0-9]+$");
+	REG_COMP(gifv_imgur, "^image https?://imgur.com/[a-zA-Z0-9]+\\.gifv$");
 }

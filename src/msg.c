@@ -93,6 +93,13 @@ handle_message(char *user, char *channel, char *msg)
 			goto done;
 		}
 
+		if (is_gifv_imgur(msg + offset)) {
+			sleep(1);
+			*(msg + offset + strlen(msg + offset) - 1) = '\0';
+			xasprintf(&out, "ygor: %s", msg + offset);
+			goto done;
+		}
+
 		if ((offset = addressed_to_ygor_typo(msg)) > 0) {
 			out = handle_typoed_ygor_message(msg, offset);
 			msg = out;
