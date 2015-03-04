@@ -1,6 +1,8 @@
 OBJECTS= \
 	dial.o \
 	fade.o \
+	irc.o \
+	log.o \
 	main.o \
 	msg-alias.o \
 	msg.o \

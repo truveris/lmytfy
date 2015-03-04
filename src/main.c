@@ -28,143 +28,48 @@
 
 #include <err.h>
 #include <errno.h>
-#include <stdarg.h>
 #include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 #include <time.h>
-#include <unistd.h>
-#include <regex.h>
 
 #include "dial.h"
-#include "lmytfy.h"
-#include "msg.h"
+#include "irc.h"
+#include "log.h"
 #include "parse.h"
-#include "strlcpy.h"
-#include "strtonum.h"
 
-static char *progname;
-static char *host = "localhost";
-static char *port = "6667";
-static char *name = "let me ygor that for you";
-static char *nick = "lmytfy";
-static char bufin[4096];
-char bufout[4096];
-static time_t trespond;
+char *host = "localhost";
+char *port = "6667";
+char *nick = "lmytfy";
+char *name = "let me ygor that for you";
 FILE *srv;
 
-void
-pout(char *channel, char *fmt, ...) {
-	static char timestr[80];
-	time_t t;
-	va_list ap;
+const char *channels[] = {
+	"#dev",
+	"#ops",
+	NULL
+};
 
-	va_start(ap, fmt);
-	vsnprintf(bufout, sizeof bufout, fmt, ap);
-	va_end(ap);
-	t = time(NULL);
-	strftime(timestr, sizeof timestr, "%Y-%m-%d %R", localtime(&t));
-	fprintf(stdout, "%-12s: %s %s\n", channel, timestr, bufout);
-}
-
-void
-sout(char *fmt, ...) {
-	va_list ap;
-
-	va_start(ap, fmt);
-	vsnprintf(bufout, sizeof bufout, fmt, ap);
-	va_end(ap);
-	fprintf(srv, "%s\r\n", bufout);
-	fflush(srv);
-}
-
-void
-privmsg(char *channel, char *msg) {
-	if (channel[0] == '\0') {
-		pout("", "No channel to send to");
-		return;
-	}
-	pout(channel, "<%s> %s", nick, msg);
-	sout("PRIVMSG %s :%s", channel, msg);
-}
-
-static void
-parsesrv(char *cmd) {
-	char *usr, *par, *txt;
-
-	usr = host;
-
-	if (!cmd || !*cmd)
-		return;
-
-	if (cmd[0] == ':') {
-		usr = cmd + 1;
-		cmd = skip(usr, ' ');
-		if (cmd[0] == '\0')
-			return;
-		skip(usr, '!');
-	}
-
-	skip(cmd, '\r');
-	par = skip(cmd, ' ');
-	txt = skip(par, ':');
-	trim(par);
-
-	if (!strcmp("PONG", cmd))
-		return;
-
-	if (!strcmp("PRIVMSG", cmd)) {
-		pout(par, "<%s> %s", usr, txt);
-		handle_message(usr, par, txt);
-	} else if (!strcmp("PING", cmd)) {
-		sout("PONG %s", txt);
-	} else {
-		pout(usr, ">< %s (%s): %s", cmd, par, txt);
-		if (!strcmp("NICK", cmd) && !strcmp(usr, nick))
-			strlcpy(nick, txt, sizeof nick);
-	}
-}
+static time_t trespond;
 
 #ifndef REGRESS
 int
 main(int argc, char *argv[]) {
 	(void)argc;
-	char const *errstr;
-	int n, fd;
+	(void)argv;
+	int n;
 	fd_set rd;
 	struct timeval tv;
-
-	progname = strdup(argv[0]);
+	static char bufin[4096];
 
 	init_regexes();
 
-	/*
-	 * Dial to the server. If a previous session is passing around a
-	 * SOCKETFD, assume this is an opened file descriptor to the irc server
-	 * socket.
-	 */
-	char const *fdc = getenv("SOCKETFD");
-	if (fdc == NULL) {
-		srv = fdopen(dial(host, port), "r+");
-		if (!srv) {
-			err(1, "error: fdopen failed: ");
-		}
+	if ((srv = fdopen(dial(host, port), "r+")) == NULL)
+		err(1, "error: fdopen failed: ");
 
-		sout("NICK %s", nick);
-		sout("USER %s localhost %s :%s", nick, host, name);
-		fflush(srv);
-		sout("JOIN #dev");
-		sout("JOIN #ops");
-		fflush(srv);
-		setbuf(stdout, NULL);
-		setbuf(srv, NULL);
-	} else {
-		fd = strtonum(fdc, 1, 4096, &errstr);
-		if (errstr) {
-			errx(1, "bad value for SOCKETFD %s: %s", errstr, fdc);
-		}
-		srv = fdopen(fd, "r+");
-	}
+	irc_startup();
+
+	/* Disable buffering */
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(srv, NULL, _IONBF, 0);
 
 	for (;;) {
 		FD_ZERO(&rd);
@@ -181,7 +86,7 @@ main(int argc, char *argv[]) {
 			if (time(NULL) - trespond >= 300) {
 				errx(1, "error: parse timeout");
 			}
-			sout("PING %s", host);
+			irc_printf("PING %s", host);
 			continue;
 		}
 
@@ -189,7 +94,7 @@ main(int argc, char *argv[]) {
 			if (fgets(bufin, sizeof(bufin), srv) == NULL) {
 				err(1, "error: server closed connection");
 			}
-			parsesrv(bufin);
+			irc_parse(bufin);
 			trespond = time(NULL);
 		}
 	}

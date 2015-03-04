@@ -123,7 +123,7 @@ handle_message(char *user, char *channel, char *msg)
 
 done:
 	if (out != NULL) {
-		privmsg(channel, out);
+		irc_privmsg(channel, "%s", out);
 		xfree(out);
 	}
 }

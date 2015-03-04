@@ -1,7 +1,7 @@
 /*
- * MIT/X Consortium License
- *
  * Copyright 2015, Truveris Inc. All Rights Reserved.
+ *
+ * MIT/X Consortium License
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -22,50 +22,25 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include <stdarg.h>
 #include <stdio.h>
+#include <stdlib.h>
 #include <time.h>
 
-#include "fade.h"
-#include "lmytfy.h"
+#include "log.h"
 
-#define NSECFADE 400000000;
-#define FORMAT "ygor: volume %u%%"
+static char buf[4096];
 
 void
-fadein(char *channel)
-{
-	int i;
-	struct timespec timeout;
+log_printf(char *channel, char *fmt, ...) {
+	static char timestr[80];
+	time_t t;
+	va_list ap;
 
-	timeout.tv_sec = 0;
-	timeout.tv_nsec = NSECFADE;
-
-	for (i = 50; i <= 80; i += 5) {
-		irc_privmsg(channel, FORMAT, i);
-		nanosleep(&timeout, NULL);
-	}
-}
-
-void
-fadeout(char *channel)
-{
-	int i;
-	struct timespec timeout;
-
-	timeout.tv_sec = 0;
-	timeout.tv_nsec = NSECFADE;
-
-	for (i = 80; i >= 50; i -= 5) {
-		irc_privmsg(channel, FORMAT, i);
-		nanosleep(&timeout, NULL);
-	}
-
-	timeout.tv_sec = 1;
-	timeout.tv_nsec = 0;
-
-	irc_privmsg(channel, "ygor: %s", "stop");
-	nanosleep(&timeout, NULL);
-
-	irc_privmsg(channel, "ygor: %s", "volume 80%");
-	nanosleep(&timeout, NULL);
+	va_start(ap, fmt);
+	vsnprintf(buf, sizeof buf, fmt, ap);
+	va_end(ap);
+	t = time(NULL);
+	strftime(timestr, sizeof timestr, "%Y-%m-%d %R", localtime(&t));
+	fprintf(stdout, "%-12s: %s %s\n", channel, timestr, buf);
 }

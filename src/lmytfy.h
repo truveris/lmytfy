@@ -28,6 +28,6 @@
  */
 #define MAXIRCLEN 2048
 
-void	 pout(char *, char *, ...);
-void	 sout(char *, ...);
-void	 privmsg(char *, char *);
+void	 log_printf(char *, char *, ...);
+void	 irc_printf(char *, ...);
+void	 irc_privmsg(char *, char *, ...);

@@ -35,6 +35,7 @@
 #include <fcntl.h>
 #include <err.h>
 
+#include "dial.h"
 #include "lmytfy.h"
 
 int

@@ -16,22 +16,10 @@
  */
 
 #include <stdlib.h>
-// #include <sys/param.h>
-// 
-// #include <stdio.h>
-// #include <assert.h>
-// #include <string.h>
-// #include <wchar.h>
 #include <locale.h>
-// #include <stdarg.h>
-// #include <errno.h>
-// 
-// #include "main.c"
-// #include "utils.h"
-// #include "strlcpy.h"
-// #include "wcslcpy.h"
-// #include "template.h"
+
 #include "main.c"
+#include "msg.h"
 #include "parse.h"
 #include "test.h"
 
@@ -85,30 +73,6 @@ test_addressed_to_ygor_or_typo__short_typo(void)
 }
 
 static int
-test_get_alias_from_msg__full(void)
-{
-	char *c;
-	c = get_alias_from_msg("ygor: alias foo bar");
-	return (assert_string_equals(c, "foo"));
-}
-
-static int
-test_get_alias_from_msg__partial(void)
-{
-	char *c;
-	c = get_alias_from_msg(" alias foo bar");
-	return (assert_string_equals(c, "foo"));
-}
-
-static int
-test_get_alias_from_msg__null(void)
-{
-	char *c;
-	c = get_alias_from_msg(" foo bar");
-	return (assert_null(c));
-}
-
-static int
 test_handle_typoed_ygor_message__normal(void)
 {
 	char *out;
@@ -147,9 +111,6 @@ main(int argc, const char *argv[])
 	RUN_TEST(test_addressed_to_ygor_or_typo__not_ygor);
 	RUN_TEST(test_addressed_to_ygor_or_typo__ygor_long);
 	RUN_TEST(test_addressed_to_ygor_or_typo__short_typo);
-	RUN_TEST(test_get_alias_from_msg__full);
-	RUN_TEST(test_get_alias_from_msg__partial);
-	RUN_TEST(test_get_alias_from_msg__null);
 	RUN_TEST(test_handle_typoed_ygor_message__normal);
 	RUN_TEST(test_handle_typoed_ygor_message__typo);
 	RUN_TEST(test_handle_typoed_ygor_message__short);
