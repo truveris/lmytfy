@@ -27,10 +27,11 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include "msg.h"
-#include "parse.h"
 #include "irc.h"
 #include "log.h"
+#include "msg.h"
+#include "parse.h"
+#include "strlcpy.g"
 
 extern char *name;
 extern char *nick;

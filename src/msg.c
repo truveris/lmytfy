@@ -46,7 +46,7 @@ handle_typoed_ygor_message(char *msg, size_t offset)
 	}
 
 	msg += offset;
-	asprintf(&out, "ygor: %s", msg);
+	xasprintf(&out, "ygor: %s", msg);
 
 	return out;
 }

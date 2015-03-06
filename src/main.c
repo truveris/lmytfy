@@ -26,6 +26,8 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include <sys/select.h>
+
 #include <err.h>
 #include <errno.h>
 #include <stdio.h>

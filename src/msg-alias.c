@@ -35,6 +35,7 @@
 #include "parse.h"
 #include "msg.h"
 #include "xmalloc.h"
+#include "strlcpy.h"
 
 static char last_alias_value[MAXIRCLEN];
 static char last_alias_user[MAXIRCLEN];
