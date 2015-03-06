@@ -31,7 +31,7 @@
 #include "log.h"
 #include "msg.h"
 #include "parse.h"
-#include "strlcpy.g"
+#include "strlcpy.h"
 
 extern char *name;
 extern char *nick;
