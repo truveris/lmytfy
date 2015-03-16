@@ -67,10 +67,8 @@ handle_commands(char *channel, char *msg)
 		fadein(channel);
 	} else if (streq(msg, "fadeout")) {
 		fadeout(channel);
-	} else if (streq(msg, "++") || streq(msg, "--")) {
-		// NOP
 	} else {
-		out = strdup("\001ACTION error: invalid command\001");
+		// NOP
 	}
 
 	return out;
