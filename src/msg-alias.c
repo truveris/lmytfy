@@ -115,7 +115,8 @@ handle_ygor_msg(char *msg)
 
 	value = get_value_after_prefix(msg, "ok (replaces \"");
 	if (value != NULL) {
-		if (streq(last_alias_user, "jimmy")) {
+		if (streq(last_alias_user, "jimmy") ||
+		    streq(last_alias_user, "samurl")) {
 			xasprintf(&output, "ygor: alias %s \"%s\"", last_alias,
 			    value);
 			goto done;
@@ -134,7 +135,8 @@ handle_ygor_msg(char *msg)
 
 	value = get_value_after_prefix(msg, "ok (created as \"");
 	if (value != NULL) {
-		if (streq(last_alias_user, "jimmy")) {
+		if (streq(last_alias_user, "jimmy") ||
+		    streq(last_alias_user, "samurl")) {
 			xasprintf(&output, "ygor: unalias %s", value);
 			goto done;
 		}
