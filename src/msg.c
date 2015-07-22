@@ -86,6 +86,11 @@ handle_message(char *user, char *channel, char *msg)
 		goto done;
 	}
 
+	if (win_fail(msg)) {
+		out = strdup("ygor: winxp");
+		goto done;
+	}
+
 	if ((offset = addressed_to_ygor_or_typo(msg)) > 0) {
 		if (is_short_imgur(msg + offset)) {
 			sleep(1);
