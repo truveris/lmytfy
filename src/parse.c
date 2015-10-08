@@ -194,7 +194,7 @@ trim(char *s) {
 void
 init_regexes(void)
 {
-	REG_COMP(ygor_preg, "^[ygor]{3,4}[^a-zA-Z0-9]+");
+	REG_COMP(ygor_preg, "^[ygor][ybgor][ygor][ygor]?[^a-zA-Z0-9]+");
 	REG_COMP(lmytfy_preg, "^lmytfy[^a-z0-9]");
 	REG_COMP(win_preg, "^.*/?w/?in [0-9]+$");
 	REG_COMP(alias_preg, "alias ([^ ]+) +(.*)");
