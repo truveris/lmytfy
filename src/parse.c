@@ -32,7 +32,7 @@
 #include "strlcpy.h"
 #include "xmalloc.h"
 
-regex_t ygor_preg, lmytfy_preg, alias_preg, win_preg, short_imgur, gifv_imgur, win;
+regex_t ygor_preg, lmytfy_preg, alias_preg, win_preg, query_preg, short_imgur, gifv_imgur, win;
 
 int
 startswith(char *s, char *prefix)
@@ -107,6 +107,9 @@ int
 win_fail(const char *msg)
 {
 	if (regexec(&win_preg, msg, 0, 0, 0) == 0)
+		return (1);
+
+	if (regexec(&query_preg, msg, 0, 0, 0) == 0)
 		return (1);
 
 	return (0);
@@ -197,6 +200,7 @@ init_regexes(void)
 	REG_COMP(ygor_preg, "^[iygor][ybgor][ygor][ygor]?[^a-zA-Z0-9]+");
 	REG_COMP(lmytfy_preg, "^lmytfy[^a-z0-9]");
 	REG_COMP(win_preg, "^.*/?w/?in [0-9]+$");
+	REG_COMP(query_preg, "^.*/?q[ue]?[uer]?[ery]?[ry]? [a-zA-Z0-9]+$");
 	REG_COMP(alias_preg, "alias ([^ ]+) +(.*)");
 	REG_COMP(short_imgur, "^image https?://imgur.com/[a-zA-Z0-9]+$");
 	REG_COMP(gifv_imgur, "^image https?://imgur.com/[a-zA-Z0-9]+\\.gifv$");
