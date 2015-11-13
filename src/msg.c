@@ -36,6 +36,13 @@
 #include "msg.h"
 #include "xmalloc.h"
 
+char *ignored_nicks[] = {
+	"trubble",
+	"buildyacht",
+	"ferrothorn",
+	NULL,
+};
+
 char *
 handle_typoed_ygor_message(char *msg, size_t offset)
 {
@@ -77,9 +84,15 @@ handle_commands(char *channel, char *msg)
 void
 handle_message(char *user, char *channel, char *msg)
 {
-	char *out = NULL;
+	char *out = NULL, **n;
 	char alias[MAXIRCLEN], value[MAXIRCLEN];
 	size_t offset;
+
+	for (n = ignored_nicks; *n != NULL; n++) {
+		if (streq(*n, user)) {
+			return;
+		}
+	}
 
 	if (msg[0] == '!') {
 		out = strdup("ygor: !");
