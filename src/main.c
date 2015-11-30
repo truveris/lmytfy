@@ -47,6 +47,7 @@ FILE *srv;
 const char *channels[] = {
 	"#dev",
 	"#ops",
+	"#truveris",
 	NULL
 };
 

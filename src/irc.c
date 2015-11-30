@@ -96,17 +96,19 @@ irc_parse(char *cmd) {
 	txt = skip(par, ':');
 	trim(par);
 
-	if (!strcmp("PONG", cmd))
+	if (streq("PONG", cmd))
 		return;
 
-	if (!strcmp("PRIVMSG", cmd)) {
+	if (streq("INVITE", cmd)) {
+		irc_printf("JOIN %s", txt);
+	} else if (streq("PRIVMSG", cmd)) {
 		log_printf(par, "<%s> %s", usr, txt);
 		handle_message(usr, par, txt);
-	} else if (!strcmp("PING", cmd)) {
+	} else if (streq("PING", cmd)) {
 		irc_printf("PONG %s", txt);
 	} else {
 		log_printf(usr, ">< %s (%s): %s", cmd, par, txt);
-		if (!strcmp("NICK", cmd) && !strcmp(usr, nick))
+		if (streq("NICK", cmd) && !strcmp(usr, nick))
 			strlcpy(nick, txt, sizeof nick);
 	}
 }
