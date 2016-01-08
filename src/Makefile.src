@@ -1,17 +1,25 @@
 OBJECTS= \
 	dial.o \
 	fade.o \
+	mattermost.o \
 	irc.o \
+	json.o \
 	log.o \
 	main.o \
 	msg-alias.o \
 	msg.o \
 	parse.o \
+	url.o \
 	xmalloc.o
 
 OBJECTS+=${EXTRA_OBJECTS}
 
-all: options ${PROG}
+all: options ${PROG_IRC} ${PROG_MATTERMOST}
+
+install: ${PROG_IRC} ${PROG_MATTERMOST}
+	install -d -m 755 ${PREFIX}/bin
+	install -m 755 ${PROG_IRC} ${PREFIX}/bin
+	install -m 755 ${PROG_MATTERMOST} ${PREFIX}/bin
 
 options:
 	@echo ${PROG} build options:
@@ -19,8 +27,11 @@ options:
 	@echo "LDFLAGS  = ${LDFLAGS}"
 	@echo "CC       = ${CC}"
 
-${PROG}: ${OBJECTS}
-	${CC} ${LDFLAGS} -o ${PROG} ${OBJECTS} ${CURSESLIB} 
+${PROG_IRC}: ${OBJECTS}
+	${CC} ${LDFLAGS} -o ${PROG_IRC} ${OBJECTS} ${CURSESLIB}
+
+${PROG_MATTERMOST}: ${OBJECTS}
+	${CC} ${LDFLAGS} -o ${PROG_MATTERMOST} ${OBJECTS} ${CURSESLIB}
 
 run_tests: ${OBJECTS}
 	$(CC) ${CFLAGS} -D REGRESS -c test.c -o main.o

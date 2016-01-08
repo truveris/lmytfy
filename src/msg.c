@@ -1,7 +1,7 @@
 /*
  * MIT/X Consortium License
  *
- * Copyright 2015, Truveris Inc. All Rights Reserved.
+ * Copyright 2015-2016, Truveris Inc. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -81,7 +81,7 @@ handle_commands(char *channel, char *msg)
 	return out;
 }
 
-void
+char *
 handle_message(char *user, char *channel, char *msg)
 {
 	char *out = NULL, **n;
@@ -90,7 +90,7 @@ handle_message(char *user, char *channel, char *msg)
 
 	for (n = ignored_nicks; *n != NULL; n++) {
 		if (streq(*n, user)) {
-			return;
+			goto done;
 		}
 	}
 
@@ -140,6 +140,14 @@ handle_message(char *user, char *channel, char *msg)
 	}
 
 done:
+	return out;
+}
+
+void
+irc_handle_message(char *user, char *channel, char *msg) {
+	char *out;
+
+	out = handle_message(user, channel, msg);
 	if (out != NULL) {
 		irc_privmsg(channel, "%s", out);
 		xfree(out);

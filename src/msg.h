@@ -1,7 +1,7 @@
 /*
  * MIT/X Consortium License
  *
- * Copyright 2015, Truveris Inc. All Rights Reserved.
+ * Copyright 2015-2016, Truveris Inc. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -23,6 +23,7 @@
  */
 
 char		*handle_typoed_ygor_message(char *, size_t);
-void		 handle_message(char *, char *, char *);
+char		*handle_message(char *, char *, char *);
+void		 irc_handle_message(char *, char *, char *);
 char		*handle_alias(char *, char *, char *);
 char		*handle_ygor_msg(char *);

@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, Truveris Inc. All Rights Reserved.
+ * Copyright 2015-2016, Truveris Inc. All Rights Reserved.
  *
  * MIT/X Consortium License
  *
@@ -22,25 +22,37 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
+#include <sys/select.h>
+
 #include <stdarg.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <err.h>
+#include <errno.h>
+#include <time.h>
 
+#include "dial.h"
 #include "irc.h"
 #include "log.h"
 #include "msg.h"
 #include "parse.h"
 #include "strlcpy.h"
 
-extern char *name;
-extern char *nick;
-extern char *host;
-extern FILE *srv;
-
+char *host = "localhost";
+char *port = "6667";
+char *nick = "lmytfy";
+char *name = "let me ygor that for you";
+FILE *srv;
+static time_t trespond;
 static char bufout[4096];
+const char *channels[] = {
+	"#dev",
+	"#ops",
+	"#truveris",
+	NULL
+};
 
-extern const char *channels[];
 
 void
 irc_printf(char *fmt, ...) {
@@ -103,7 +115,7 @@ irc_parse(char *cmd) {
 		irc_printf("JOIN %s", txt);
 	} else if (streq("PRIVMSG", cmd)) {
 		log_printf(par, "<%s> %s", usr, txt);
-		handle_message(usr, par, txt);
+		irc_handle_message(usr, par, txt);
 	} else if (streq("PING", cmd)) {
 		irc_printf("PONG %s", txt);
 	} else {
@@ -130,4 +142,50 @@ irc_startup(void)
 		irc_printf("JOIN %s", *channel);
 	}
 	fflush(srv);
+}
+
+void
+lmytfy_irc()
+{
+	fd_set rd;
+	struct timeval tv;
+	int n;
+	static char bufin[4096];
+
+	if ((srv = fdopen(dial(host, port), "r+")) == NULL)
+		err(1, "error: fdopen failed: ");
+
+	irc_startup();
+
+	/* Disable buffering */
+	setvbuf(stdout, NULL, _IONBF, 0);
+	setvbuf(srv, NULL, _IONBF, 0);
+
+	for (;;) {
+		FD_ZERO(&rd);
+		FD_SET(0, &rd);
+		FD_SET(fileno(srv), &rd);
+		tv.tv_sec = 120;
+		tv.tv_usec = 0;
+		n = select(fileno(srv) + 1, &rd, 0, 0, &tv);
+		if (n < 0) {
+			if (errno == EINTR)
+				continue;
+			err(1, "error: select() failed: ");
+		} else if (n == 0) {
+			if (time(NULL) - trespond >= 300) {
+				errx(1, "error: parse timeout");
+			}
+			irc_printf("PING %s", host);
+			continue;
+		}
+
+		if (FD_ISSET(fileno(srv), &rd)) {
+			if (fgets(bufin, sizeof(bufin), srv) == NULL) {
+				err(1, "error: server closed connection");
+			}
+			irc_parse(bufin);
+			trespond = time(NULL);
+		}
+	}
 }

@@ -1,7 +1,7 @@
 /*
- * Copyright 2015-2016, Truveris Inc. All Rights Reserved.
- *
  * MIT/X Consortium License
+ *
+ * Copyright 2016 (c) Bertrand Janin <b@janin.com>
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -22,25 +22,4 @@
  * DEALINGS IN THE SOFTWARE.
  */
 
-#include <stdarg.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-
-#include "log.h"
-
-static char buf[4096];
-
-void
-log_printf(char *channel, char *fmt, ...) {
-	static char timestr[80];
-	time_t t;
-	va_list ap;
-
-	va_start(ap, fmt);
-	vsnprintf(buf, sizeof buf, fmt, ap);
-	va_end(ap);
-	t = time(NULL);
-	strftime(timestr, sizeof timestr, "%Y-%m-%dT%T", localtime(&t));
-	fprintf(stdout, "%s %s %s\n", timestr, channel, buf);
-}
+void lmytfy_mattermost(void);

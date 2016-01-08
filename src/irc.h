@@ -1,5 +1,5 @@
 /*
- * Copyright 2015, Truveris Inc. All Rights Reserved.
+ * Copyright 2015-2016, Truveris Inc. All Rights Reserved.
  *
  * MIT/X Consortium License
  *
@@ -26,3 +26,4 @@ void	 irc_printf(char *, ...);
 void	 irc_privmsg(char *, char *, ...);
 void	 irc_parse(char *);
 void	 irc_startup(void);
+void	 lmytfy_irc(void);
