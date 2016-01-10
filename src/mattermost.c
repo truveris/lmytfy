@@ -41,6 +41,7 @@
 #include "url.h"
 #include "xmalloc.h"
 
+#define WEBHOOK_PORT 3333
 #define BUFSIZE 4096
 #define RESPONSE_TEMPLATE \
 	"HTTP/1.1 200 OK\r\n" \
@@ -48,6 +49,12 @@
 	"Content-Length: %d\r\n" \
 	"\r\n" \
 	"%s"
+#define JSON_TEMPLATE \
+	"{" \
+	"\"username\": \"lmytfy\"," \
+	"\"icon_url\": \"https://s3.amazonaws.com/truveris-mattermost-icons/troll.png\"," \
+	"\"text\": \"%s\"" \
+	"}"
 
 static void
 http_response(int fd, const char *json)
@@ -75,7 +82,7 @@ get_json_from_response(const char *response)
 	char *jsonstr, *json;
 
 	jsonstr = json_string_encode(response);
-	xasprintf(&json, "{\"text\": \"%s\"}", jsonstr);
+	xasprintf(&json, JSON_TEMPLATE, jsonstr);
 	xfree(jsonstr);
 
 	return (json);
@@ -113,7 +120,7 @@ lmytfy_mattermost(void)
 	bzero((char *) &serveraddr, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;
 	serveraddr.sin_addr.s_addr = htonl(INADDR_ANY);
-	serveraddr.sin_port = htons((unsigned short)3333);
+	serveraddr.sin_port = htons((unsigned short)WEBHOOK_PORT);
 
 	/* Associate the parent socket with a port. */
 	if (bind(parentfd, (struct sockaddr *) &serveraddr,

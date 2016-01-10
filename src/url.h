@@ -16,4 +16,3 @@
  */
 
 const char	*url_decode(char *);
-char		*url_encode(const char *);
