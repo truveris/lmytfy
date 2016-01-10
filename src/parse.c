@@ -1,7 +1,7 @@
 /*
  * MIT/X Consortium License
  *
- * Copyright 2015, Truveris Inc. All Rights Reserved.
+ * Copyright 2015-2016, Truveris Inc. All Rights Reserved.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a
  * copy of this software and associated documentation files (the "Software"),
@@ -197,7 +197,7 @@ trim(char *s) {
 void
 init_regexes(void)
 {
-	REG_COMP(ygor_preg, "^[iygor][ybgor][ygor][ygor]?[^a-zA-Z0-9]+");
+	REG_COMP(ygor_preg, "^[iygor][ybgor][ygor][ygor]?[[:space:][:punct:]]+");
 	REG_COMP(lmytfy_preg, "^lmytfy[^a-z0-9]");
 	REG_COMP(win_preg, "^.*/?w/?i[nm] [0-9]+$");
 	REG_COMP(query_preg, "^.*/?q[ue]?[uer]?[ery]?[ry]? [a-zA-Z0-9]+$");
