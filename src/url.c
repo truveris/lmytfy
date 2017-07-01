@@ -61,27 +61,3 @@ url_decode(char *url)
 
 	return (url);
 }
-
-char *
-url_encode(const char *src)
-{
-	static char	 hex[] = "0123456789ABCDEF";
-	char		*dp, *dst;
-	unsigned char	 c;
-
-	/* We need 3 times the memory if every letter is encoded. */
-	if ((dst = calloc(3, strlen(src) + 1)) == NULL)
-		return (NULL);
-
-	for (dp = dst; *src != 0; src++) {
-		c = (unsigned char) *src;
-		if (c == ' ' || c == '#' || c == '%' || c == '?' || c == '"' ||
-		    c == '&' || c == '<' || c <= 0x1f || c >= 0x7f) {
-			*dp++ = '%';
-			*dp++ = hex[c >> 4];
-			*dp++ = hex[c & 0x0f];
-		} else
-			*dp++ = *src;
-	}
-	return (dst);
-}

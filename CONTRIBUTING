@@ -1,0 +1,26 @@
+Contributing
+============
+
+How to hack on it
+-----------------
+Style guide:
+    http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man9/style.9
+
+No matter what you do, the goal is not to build something beautiful or awesome,
+it's to get the job done in as little C code as possible without importing any
+large dependency.  Notice how we don't use a real JSON library to create JSON
+or how we don't use a real http library to serve or even parse the form data.
+
+You can copy files from other ISC/BSD/MIT licensed projects, just keep the
+copyright notices.
+
+How to wrap that thing into an installable Debian/Ubuntu package
+----------------------------------------------------------------
+ - Unpack the tarball/clone the repo.
+ - Follow this::
+ - Create the debian/ directory::
+    rm -rf debian/ ../lmytfy*orig.tar.gz
+    DEBFULLNAME="Lemmy Igor Zatforiu" EMAIL="lemmy@ygor.io" \
+    dh_make --single --createorig -c bsd -p lmytfy_0.3.0
+ - Assemble the .deb:
+    debuild

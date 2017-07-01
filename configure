@@ -116,7 +116,7 @@ esac
 
 
 # Default paths
-[ -z "$PREFIX" ]	&& PREFIX="/usr/local"
+[ -z "$PREFIX" ]	&& PREFIX="/usr"
 
 
 # Check for make

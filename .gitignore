@@ -3,3 +3,5 @@ lmytfy
 *.core
 Makefile
 src/run_tests
+src/lmytfy-irc
+src/lmytfy-mattermost

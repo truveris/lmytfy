@@ -4,6 +4,13 @@ all:
 install:
 	cd src/ && make install
 
+deb: all
+	rm -rf pkg/
+	mkdir -p pkg/DEBIAN/ pkg/usr/
+	cd src/ && make install DESTDIR=../pkg/usr
+	cp -rf debian/control pkg/DEBIAN/control
+	dpkg-deb -b pkg .
+
 clean:
 	cd src/ && make clean
 	cd tests/ && make clean
