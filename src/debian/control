@@ -1,0 +1,15 @@
+Source: lmytfy
+Section: unknown
+Priority: extra
+Maintainer: Lemmy Igor Zatforiu <lemmy@ygor.io>
+Build-Depends: debhelper (>= 8.0.0), autotools-dev
+Standards-Version: 3.9.2
+Homepage: https://github.com/truveris/lmytfy
+#Vcs-Git: git://git.debian.org/collab-maint/lmytfy.git
+#Vcs-Browser: http://git.debian.org/?p=collab-maint/lmytfy.git;a=summary
+
+Package: lmytfy
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: let me ygor that for you
+ IRC and Mattermost bot used to help humans use ygor

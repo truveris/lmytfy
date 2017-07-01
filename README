@@ -6,15 +6,15 @@ SYNOPSIS
     lmytfy-mattermost
 
 DESCRIPTION
-    IRC and Mattermost bot which translates some irc chatter into specific ygor
-    commands.  This is written in C during the evening NJ Transit commuting
-    bliss.  You can't configure it, you clone and recompile.  It is losely
-    based on the source code of sic by suckless.org and as such keeps the same
-    license.
-
-    There is nothing serious about that program, the http server is a joke, the
-    urlencoded form parsing is a joke, the JSON string encoding is a complete
-    hack.
+    IRC and Mattermost bot which translates some irc chatter into specific
+    ygor commands (e.g. typos, shortcuts, etc.).
+    
+    This is written in C as a joke, if you want to contribute, there are
+    rules:
+      1. the hackier the better, shortest path to victory
+      2. no dependencies, just import BSD/MIT/ISC files
+      3. and because we're not animals:
+         http://www.openbsd.org/cgi-bin/man.cgi/OpenBSD-current/man9/style.9
 
 INSTALL
     $ ./configure

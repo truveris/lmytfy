@@ -53,7 +53,7 @@
 	"{" \
 	"\"username\": \"lmytfy\"," \
 	"\"icon_url\": \"https://s3.amazonaws.com/truveris-mattermost-icons/troll.png\"," \
-	"\"text\": \"%s\"" \
+	"\"text\": \"I think you meant to do `%s`\"" \
 	"}"
 
 static void

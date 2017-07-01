@@ -33,6 +33,9 @@ url_decode(char *url)
 
 	while (*p != '\0') {
 		switch (*p) {
+		case '+':
+			*q = ' ';
+			break;
 		case '%':
 			/* Encoding character is followed by two hex chars */
 			if (!(isxdigit((unsigned char)p[1]) &&
